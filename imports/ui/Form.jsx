@@ -1,53 +1,59 @@
 import './formik-demo.css';
 import './rich-editor.css';
-import React from 'react';
-import { render } from 'react-dom';
-import { withFormik } from 'formik';
+import React, { Component } from 'react';
 import { EditorState } from 'draft-js';
 import { RichEditorExample } from './RichEditor';
+import { stateToHTML } from 'draft-js-export-html';
+import { stateFromHTML } from 'draft-js-import-html';
+import { Formik } from 'formik';
 
-const formikEnhancer = withFormik({
-  mapPropsToValues: props => ({
-    editorState: new EditorState.createEmpty(),
-    email: '',
-  }),
- 
-  handleSubmit: (values, { setSubmitting }) => {
-    setTimeout(() => {
-      
-      alert(JSON.stringify(values, null, 2));
-      setSubmitting(false);
-    }, 1000);
-  },
-  displayName: 'MyForm',
-});
+export class MyForm extends Component {
+  
+  submit = (values, actions) => {
+    console.log(stateToHTML(values['editorState'].getCurrentContent()));
+  }
 
-const MyForm = ({
-  values,
-  touched,
-  dirty,
-  errors,
-  handleChange,
-  handleBlur,
-  handleSubmit,
-  handleReset,
-  setFieldValue,
-  isSubmitting,
-}) => (
-  <form onSubmit={handleSubmit}>
+  render() {
+    
+    let initialValues = {
+      editorState: new EditorState.createEmpty(),
+    }
 
-    <RichEditorExample
-      editorState={values.editorState}
-      onChange={setFieldValue}
-      onBlur={handleBlur}
-    />
-
-    <button type="submit" disabled={isSubmitting}>
-      Submit
-    </button>
-
-  </form>
-);
-
-
-export const MyEnhancedForm = formikEnhancer(MyForm);
+    return (
+      <Formik
+        onSubmit={ this.submit }
+        initialValues={ initialValues }
+        validateOnBlur={ false }
+        validateOnChange={ false }
+        >
+      {({
+        values,
+        touched,
+        dirty,
+        errors,
+        handleChange,
+        handleBlur,
+        handleSubmit,
+        handleReset,
+        setFieldValue,
+        isSubmitting,
+      }) => (
+      <form onSubmit={ handleSubmit } >
+        <RichEditorExample
+          editorState={values.editorState}
+          onChange={setFieldValue}
+          onBlur={handleBlur}
+        />
+        <div>
+          <button 
+            type="submit" 
+            disabled={ isSubmitting } 
+            className="btn btn-primary"
+          >Enregistrer</button>
+        </div>
+      </form>
+      )}
+      </Formik>
+    )
+  }
+}
