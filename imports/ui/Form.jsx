@@ -6,11 +6,26 @@ import { RichEditorExample } from './RichEditor';
 import { stateToHTML } from 'draft-js-export-html';
 import { stateFromHTML } from 'draft-js-import-html';
 import { Formik } from 'formik';
+import { postsSchema } from '../api/posts';
+import { Posts } from '../api/posts';
+
+
 
 export class MyForm extends Component {
   
   submit = (values, actions) => {
-    console.log(stateToHTML(values['editorState'].getCurrentContent()));
+
+    let description = { 
+      'description': stateToHTML(values['editorState'].getCurrentContent()) 
+    };
+    console.log(description);
+
+    postsSchema.validate(description);
+    let postDocument = {
+      description: description,
+    }
+    Posts.insert(postDocument);
+
   }
 
   render() {
