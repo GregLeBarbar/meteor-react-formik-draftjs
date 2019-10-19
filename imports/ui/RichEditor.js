@@ -1,16 +1,31 @@
 import React from 'react';
 import { Editor, EditorState, RichUtils } from 'draft-js';
+import { stateToHTML } from 'draft-js-export-html';
+import { stateFromHTML } from 'draft-js-import-html';
+
 
 export class RichEditorExample extends React.Component {
   onChange = editorState => {
-    this.props.onChange('editorState', editorState);
+    let reference = this.props.reference;
+    this.props.onChange(reference, editorState);
   };
 
-  focus = () => this.refs.editor.focus();
+  // this.refs.editor correspond à ref="editor" du composant <Editor>
+  focus = () => {
+    if (this.props.reference == 'description1') {
+      this.refs.description1.focus();
+    } else if (this.props.reference == 'description2') {
+      this.refs.description2.focus();
+    } else {
+      this.refs.editor.focus();
+    } 
+  }
 
   handleKeyCommand = command => {
     const { editorState } = this.props;
+    
     const newState = RichUtils.handleKeyCommand(editorState, command);
+   
     if (newState) {
       this.onChange(newState);
       return true;
@@ -22,6 +37,7 @@ export class RichEditorExample extends React.Component {
     const maxDepth = 4;
     this.onChange(RichUtils.onTab(e, this.props.editorState, maxDepth));
   };
+
   toggleBlockType = blockType => {
     this.onChange(RichUtils.toggleBlockType(this.props.editorState, blockType));
   };
@@ -30,8 +46,12 @@ export class RichEditorExample extends React.Component {
       RichUtils.toggleInlineStyle(this.props.editorState, inlineStyle)
     );
   };
+  
   render() {
-    const { editorState } = this.props;
+    const { editorState, reference } = this.props;
+
+    console.log(stateToHTML(editorState.getCurrentContent()));
+
     // If the user changes block type before entering any text, we can
     // either style the placeholder or hide it. Let's just hide it now.
     let className = 'RichEditor-editor';
@@ -41,6 +61,7 @@ export class RichEditorExample extends React.Component {
         className += ' RichEditor-hidePlaceholder';
       }
     }
+    
     return (
       <div className="RichEditor-root">
         <BlockStyleControls
@@ -60,14 +81,16 @@ export class RichEditorExample extends React.Component {
             onChange={this.onChange}
             onTab={this.onTab}
             placeholder="Tell a story..."
-            ref="editor"
-            spellCheck={true}
+            ref={reference}
+            spellCheck={true} 
           />
         </div>
       </div>
     );
   }
 }
+
+
 // Custom overrides for "code" style.
 const styleMap = {
   CODE: {
@@ -85,6 +108,7 @@ function getBlockStyle(block) {
       return null;
   }
 }
+
 class StyleButton extends React.Component {
   constructor() {
     super();
