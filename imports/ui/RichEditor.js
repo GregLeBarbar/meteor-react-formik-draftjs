@@ -3,7 +3,6 @@ import { Editor, EditorState, RichUtils } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
 import { stateFromHTML } from 'draft-js-import-html';
 
-
 export class RichEditorExample extends React.Component {
   onChange = editorState => {
     let reference = this.props.reference;
@@ -80,7 +79,7 @@ export class RichEditorExample extends React.Component {
             handleKeyCommand={this.handleKeyCommand}
             onChange={this.onChange}
             onTab={this.onTab}
-            placeholder="Tell a story..."
+            placeholder=""
             ref={reference}
             spellCheck={true} 
           />

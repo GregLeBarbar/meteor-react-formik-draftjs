@@ -20,6 +20,7 @@ export class MyForm extends Component {
 
     postsSchema.validate(post);
     let postDocument = {
+      title: values.title,
       description1: post.description1,
       description2: post.description2,
     }
@@ -58,6 +59,7 @@ export class MyForm extends Component {
           isSubmitting,
         }) => (
         <form onSubmit={ handleSubmit } >
+          
           <label>Description 1</label>
           <RichEditorExample
             editorState={values.description1}
